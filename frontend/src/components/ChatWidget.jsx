@@ -6,6 +6,7 @@ import {
   sendUserMessage,
   setMessageCallback,
   createConversation,
+  minimalSendUserMessage,
 } from "../services/elevenLabsService";
 
 function ChatWidget() {
@@ -102,9 +103,7 @@ function ChatWidget() {
 
     try {
       // setTimeout(() => {
-        conversation.sendUserMessage({
-          text: userMessage,
-        });
+        minimalSendUserMessage(conversation, userMessage)
       // }, 5000);
     } catch (error) {
       console.log("error in sendUserMessage", error);

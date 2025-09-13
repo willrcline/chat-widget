@@ -12,6 +12,12 @@ export function setMessageCallback(callback) {
   onAgentMessage = callback;
 }
 
+export async function minimalSendUserMessage(conversation, userMessage) {
+  conversation.sendUserMessage({
+    text: userMessage,
+  });
+}
+
 export async function sendUserMessage(userMessage, sessionId) { 
   try {
     console.log(`ElevenLabs: Sending message from session ${sessionId}: ${userMessage}`);

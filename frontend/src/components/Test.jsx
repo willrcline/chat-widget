@@ -1,5 +1,6 @@
 import { useConversation } from "@elevenlabs/react";
 import { useCallback } from "react";
+import { minimalSendUserMessage } from '../services/elevenLabsService'
 
 export function Conversation() {
   const conversation = useConversation({
@@ -9,6 +10,20 @@ export function Conversation() {
     onError: (error) => console.error("Error:", error),
   });
 
+  // const { status, sendUserMessage } = useConversation();
+
+
+  const handleSendMessage = () => {
+    console.log("send message btn clicked")
+    const message = "If you receive this message, tell me what 2 + 2 is.";
+    if (conversation.status === "connected") {
+      conversation.sendUserMessage(message);
+    } else {
+      console.warn("Cannot send message - connection not ready. Status:", status);
+    }
+    // () => minimalSendUserMessage(conversation, message)
+  }
+
   const startConversation = useCallback(async () => {
     try {
       // Request microphone permission
@@ -17,6 +32,7 @@ export function Conversation() {
       // Start the conversation with your agent
       await conversation.startSession({
         agentId: "agent_6701k3f4ynb0f32tapzgnf9yhc5n", // Replace with your agent ID
+
         // user_id: "YOUR_CUSTOMER_USER_ID", // Optional field for tracking your end user IDs
       });
     } catch (error) {
@@ -44,6 +60,12 @@ export function Conversation() {
           className="px-4 py-2 bg-red-500 text-white rounded disabled:bg-gray-300"
         >
           Stop Conversation
+        </button>
+        <button
+          onClick={handleSendMessage}
+          disabled={conversation.status !== "connected"}
+        >
+          Send Text
         </button>
       </div>
 
