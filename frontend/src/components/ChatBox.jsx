@@ -50,9 +50,11 @@ function ChatBox({ messages, onSendMessage }) {
             <Typography variant="body2">Start a conversation...</Typography>
           </Box>
         ) : (
-          messages.map((msg) => (
-            <ChatMessage key={msg.id} role={msg.role} message={msg.message} />
-          ))
+          messages
+            .slice(-30)
+            .map((msg) => (
+              <ChatMessage key={msg.id} role={msg.role} message={msg.message} />
+            ))
         )}
       </Box>
 
