@@ -3,6 +3,7 @@ import { useCallback } from "react";
 
 export function Conversation() {
   const conversation = useConversation({
+    textOnly: true,
     onConnect: () => console.log("Connected"),
     onDisconnect: () => console.log("Disconnected"),
     onMessage: (message) => console.log("Message:", message),
@@ -21,17 +22,9 @@ export function Conversation() {
 
   const startConversation = useCallback(async () => {
     try {
-      // Request microphone permission
-      await navigator.mediaDevices.getUserMedia({ audio: true });
-
       // Start the conversation with your agent
       await conversation.startSession({
         agentId: "agent_6701k3f4ynb0f32tapzgnf9yhc5n",
-        overrides: {
-          conversation: {
-            textOnly: true,
-          },
-        },
       });
     } catch (error) {
       console.error("Failed to start conversation:", error);
