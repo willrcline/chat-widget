@@ -1,4 +1,5 @@
 import { Box, Typography, Paper, Link } from '@mui/material';
+import { memo } from 'react';
 
 function ChatMessage({ role, message }) {
   const isUser = role === 'user';
@@ -77,4 +78,4 @@ function ChatMessage({ role, message }) {
   );
 }
 
-export default ChatMessage;
+export default memo(ChatMessage);
