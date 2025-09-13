@@ -10,6 +10,7 @@ function App() {
         minHeight: "100vh",
         backgroundColor: "#f5f5f5",
         padding: "20px",
+        color: "#000", // Set text color to black
       }}
     >
       <h1>Webchat Widget Demo</h1>
@@ -19,7 +20,7 @@ function App() {
       </p>
       <p>Try clicking the chat button to start a conversation!</p>
 
-      <Conversation />
+      {/* <Conversation /> */}
       <ChatProvider>
         <ChatWidget />
       </ChatProvider>
