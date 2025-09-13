@@ -4,13 +4,13 @@ import ChatBox from "./ChatBox";
 import { useChatContext } from "../contexts/ChatContext";
 
 function ChatWidget() {
-  const { isOpen, messages, handleSendMessage, toggleChat } = useChatContext();
+  const { isOpen, toggleChat } = useChatContext();
 
   return (
     <>
       {/* Chat Box */}
       {isOpen && (
-        <ChatBox messages={messages} onSendMessage={handleSendMessage} />
+        <ChatBox />
       )}
 
       {/* Toggle Button */}
