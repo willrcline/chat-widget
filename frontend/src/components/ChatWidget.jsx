@@ -67,6 +67,12 @@ function ChatWidget() {
 
   useEffect(() => {
     loadSession();
+    try {
+        console.log("Starting conversation on component load...");
+        startConversationSession(conversation);
+      } catch (error) {
+        console.error("Failed to start conversation:", error);
+      }
   }, []);
 
   const handleSendMessage = async (userMessage) => {
