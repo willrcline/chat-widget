@@ -26,9 +26,12 @@ export function Conversation() {
 
       // Start the conversation with your agent
       await conversation.startSession({
-        agentId: "agent_6701k3f4ynb0f32tapzgnf9yhc5n", // Replace with your agent ID
-
-        // user_id: "YOUR_CUSTOMER_USER_ID", // Optional field for tracking your end user IDs
+        agentId: "agent_6701k3f4ynb0f32tapzgnf9yhc5n",
+        overrides: {
+          conversation: {
+            textOnly: true,
+          },
+        },
       });
     } catch (error) {
       console.error("Failed to start conversation:", error);
