@@ -1,9 +1,9 @@
-import { Box, Typography, Paper, Link } from '@mui/material';
-import { memo } from 'react';
+import { Box, Typography, Paper, Link } from "@mui/material";
+import { memo } from "react";
 
 function ChatMessage({ role, message }) {
-  const isUser = role === 'user';
-  
+  const isUser = role === "user";
+
   // Function to parse markdown links and convert them to JSX
   const parseMarkdownLinks = (text) => {
     // Regex to match markdown links: [text](url)
@@ -17,7 +17,7 @@ function ChatMessage({ role, message }) {
       if (match.index > lastIndex) {
         parts.push(text.slice(lastIndex, match.index));
       }
-      
+
       // Add the link
       const linkText = match[1];
       const linkUrl = match[2];
@@ -38,20 +38,20 @@ function ChatMessage({ role, message }) {
           {linkText}
         </Link>
       );
-      
+
       lastIndex = match.index + match[0].length;
     }
-    
+
     // Add remaining text after the last link
     if (lastIndex < text.length) {
       parts.push(text.slice(lastIndex));
     }
-    
+
     return parts.length > 0 ? parts : text;
   };
 
   const parsedMessage = parseMarkdownLinks(message);
-  
+
   return (
     <Box
       sx={{

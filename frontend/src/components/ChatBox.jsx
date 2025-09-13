@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Box, Paper, TextField, Typography, Button } from "@mui/material";
 import ChatMessage from "./ChatMessage";
 import { inputStyle } from "../styles/ChatBox";
+import agentIcon from "../assets/t9-logo.png";
 import { useChatContext } from "../contexts/ChatContext";
 
 function ChatBox() {
@@ -55,10 +56,28 @@ function ChatBox() {
         sx={{
           p: 1,
           backgroundColor: "black",
-          height: 100
+          height: 100,
+          display: "flex",
+          alignItems: "center",
+          gap: 2
         }}
       >
-        Status: 
+        <Box
+          component="img"
+          src={agentIcon}
+          alt="AI Agent"
+          sx={{
+            height: 80,
+            width: "auto",
+            borderRadius: 1
+          }}
+        />
+        <Box sx={{ flex: 1 }}>
+          <ChatMessage
+            role={"agent"}
+            message={"Chatting with AI Agent"}
+          />
+        </Box>
       </Box>
 
       {/* Messages Area */}
