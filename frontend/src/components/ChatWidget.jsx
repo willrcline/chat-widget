@@ -21,8 +21,13 @@ function ChatWidget() {
     },
     onMessage: (message) => {
       console.log("ChatWidget: Received message:", message);
-      // Add agent message to chat
-      const agentMsg = { role: "agent", message: message.message };
+      // Add agent message to chat with unique ID and timestamp
+      const agentMsg = { 
+        id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        role: "agent", 
+        message: message.message,
+        timestamp: Date.now()
+      };
       setMessages((currentMessages) => {
         const updatedMessages = [...currentMessages, agentMsg];
         saveSession(updatedMessages);
@@ -76,8 +81,13 @@ function ChatWidget() {
   }, []);
 
   const handleSendMessage = async (userMessage) => {
-    // Add user message to chat immediately
-    const userMsg = { role: "user", message: userMessage };
+    // Add user message to chat immediately with unique ID and timestamp
+    const userMsg = { 
+      id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      role: "user", 
+      message: userMessage,
+      timestamp: Date.now()
+    };
     const updatedMessages = [...messages, userMsg];
     setMessages(updatedMessages);
     saveSession(updatedMessages);

@@ -49,8 +49,8 @@ function ChatBox({ messages, onSendMessage }) {
             <Typography variant="body2">Start a conversation...</Typography>
           </Box>
         ) : (
-          messages.map((msg, index) => (
-            <ChatMessage key={index} role={msg.role} message={msg.message} />
+          messages.map((msg) => (
+            <ChatMessage key={msg.id} role={msg.role} message={msg.message} />
           ))
         )}
       </Box>
