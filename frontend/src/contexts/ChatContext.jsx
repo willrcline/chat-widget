@@ -14,6 +14,7 @@ export const useChatContext = () => {
 
 export const ChatProvider = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState(null)
   const [messages, setMessages] = useState([]);
   const [sessionId, setSessionId] = useState(null);
 
@@ -21,9 +22,11 @@ export const ChatProvider = ({ children }) => {
     textOnly: true,
     onConnect: () => {
       console.log("ChatWidget: Connected to ElevenLabs");
+      setConnectionStatus("Connected")
     },
     onDisconnect: () => {
       console.log("ChatWidget: Disconnected from ElevenLabs");
+      setConnectionStatus("Disconnected");
     },
     onMessage: (message) => {
       console.log("ChatWidget: Received message:", message);
@@ -120,6 +123,7 @@ export const ChatProvider = ({ children }) => {
     isOpen,
     messages,
     sessionId,
+    connectionStatus,
     conversation,
     handleSendMessage,
     toggleChat,

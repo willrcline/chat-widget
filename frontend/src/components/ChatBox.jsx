@@ -6,12 +6,11 @@ import agentIcon from "../assets/t9-logo.png";
 import { useChatContext } from "../contexts/ChatContext";
 
 function ChatBox() {
-  const { messages, handleSendMessage } = useChatContext();
+  const { messages, connectionStatus, handleSendMessage } = useChatContext();
   const [inputValue, setInputValue] = useState("");
   const [visibleCount, setVisibleCount] = useState(30);
   const visibleMessages = messages.slice(-visibleCount);
   const messagesEndRef = useRef(null);
-
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -59,7 +58,7 @@ function ChatBox() {
           height: 100,
           display: "flex",
           alignItems: "center",
-          gap: 2
+          gap: 2,
         }}
       >
         <Box
@@ -69,15 +68,14 @@ function ChatBox() {
           sx={{
             height: 80,
             width: "auto",
-            borderRadius: 1
+            borderRadius: 1,
           }}
         />
-        <Box sx={{ flex: 1 }}>
-          <ChatMessage
-            role={"agent"}
-            message={"Chatting with AI Agent"}
-          />
-        </Box>
+        {connectionStatus === "Connected" && (
+          <Box sx={{ flex: 1 }}>
+            <ChatMessage role={"agent"} message={"Chatting with AI Agent"} />
+          </Box>
+        )}
       </Box>
 
       {/* Messages Area */}
@@ -87,7 +85,7 @@ function ChatBox() {
           p: 1,
           overflowY: "auto",
           backgroundColor: "black",
-          overscrollBehavior: "contain"
+          overscrollBehavior: "contain",
         }}
       >
         {messages.length === 0 ? (
@@ -97,15 +95,18 @@ function ChatBox() {
         ) : (
           <>
             {messages.length > visibleCount && (
-              <Box sx={{ p: 1, textAlign: 'center' }}>
-                <Button 
-                  variant="outlined" 
+              <Box sx={{ p: 1, textAlign: "center" }}>
+                <Button
+                  variant="outlined"
                   size="small"
                   onClick={() => setVisibleCount(60)}
-                  sx={{ 
-                    color: 'white', 
-                    borderColor: 'white',
-                    '&:hover': { borderColor: 'white', backgroundColor: 'rgba(255,255,255,0.1)' }
+                  sx={{
+                    color: "white",
+                    borderColor: "white",
+                    "&:hover": {
+                      borderColor: "white",
+                      backgroundColor: "rgba(255,255,255,0.1)",
+                    },
                   }}
                 >
                   Load More Messages
