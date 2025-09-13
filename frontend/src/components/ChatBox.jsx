@@ -54,6 +54,7 @@ function ChatBox({ messages, onSendMessage }) {
           p: 1,
           overflowY: "auto",
           backgroundColor: "black",
+          overscrollBehavior: "contain"
         }}
       >
         {messages.length === 0 ? (
