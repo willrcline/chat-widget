@@ -68,9 +68,19 @@ function ChatMessage({ role, message }) {
           backgroundColor: isUser ? "#e0e0e0" : "#343434",
           color: isUser ? "white" : "black",
           borderRadius: 2,
+          overflowWrap: "break-word",
         }}
       >
-        <Typography color={isUser ? "black" : "white"}>
+        <Typography 
+          color={isUser ? "black" : "white"}
+          sx={{
+            overflowWrap: "break-word",
+            whiteSpace: "pre-wrap",
+            textAlign: "left",
+            maxWidth: "100%",
+            overflow: "hidden",
+          }}
+        >
           {parsedMessage}
         </Typography>
       </Paper>
