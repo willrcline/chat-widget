@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webchat Widget Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Webchat Widget Demo</h1>
+        <p>This page demonstrates the webchat widget loaded as a simple script tag.</p>
+        <p>The widget should appear as a button in the bottom-right corner of the page.</p>
+        <p>Click the button to open the chat interface and try sending a message!</p>
+        
+        <h2>Usage</h2>
+        <p>To use this widget on your website, simply include:</p>
+        <div class="code-block">
+&lt;script src="webchat-widget.umd.cjs"&gt;&lt;/script&gt;
+&lt;script&gt;
+  WebchatWidget.init();
+&lt;/script&gt;
+        </div>
+        
+        <p>You can also mount it to a specific container:</p>
+        <div class="code-block">
+&lt;script&gt;
+  WebchatWidget.init('#my-container');
+&lt;/script&gt;
+        </div>
+    </div>
+
+    <!-- Load the webchat widget -->
+    <script src="frontend/dist/webchat-widget.umd.cjs"></script>
+    <script>
+        // Initialize the widget
+        WebchatWidget.init();
+    </script>
+</body>
+</html>
