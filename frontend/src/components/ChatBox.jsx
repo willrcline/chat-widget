@@ -1,20 +1,22 @@
-import { useState } from 'react';
-import { Box, Paper, TextField, Typography } from '@mui/material';
-import ChatMessage from './ChatMessage';
-import { inputStyle } from '../styles/ChatBox'
+import { useState } from "react";
+import { Box, Paper, TextField, Typography, Button } from "@mui/material";
+import ChatMessage from "./ChatMessage";
+import { inputStyle } from "../styles/ChatBox";
 
 function ChatBox({ messages, onSendMessage }) {
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
+  const [visibleCount, setVisibleCount] = useState(30);
+  const visibleMessages = messages.slice(-visibleCount);
 
   const handleSend = () => {
     if (inputValue.trim()) {
       onSendMessage(inputValue.trim());
-      setInputValue('');
+      setInputValue("");
     }
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
@@ -50,11 +52,27 @@ function ChatBox({ messages, onSendMessage }) {
             <Typography variant="body2">Start a conversation...</Typography>
           </Box>
         ) : (
-          messages
-            .slice(-30)
-            .map((msg) => (
+          <>
+            {messages.length > visibleCount && (
+              <Box sx={{ p: 1, textAlign: 'center' }}>
+                <Button 
+                  variant="outlined" 
+                  size="small"
+                  onClick={() => setVisibleCount(60)}
+                  sx={{ 
+                    color: 'white', 
+                    borderColor: 'white',
+                    '&:hover': { borderColor: 'white', backgroundColor: 'rgba(255,255,255,0.1)' }
+                  }}
+                >
+                  Load More Messages
+                </Button>
+              </Box>
+            )}
+            {visibleMessages.map((msg) => (
               <ChatMessage key={msg.id} role={msg.role} message={msg.message} />
-            ))
+            ))}
+          </>
         )}
       </Box>
 
