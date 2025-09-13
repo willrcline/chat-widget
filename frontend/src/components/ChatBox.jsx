@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Box, Paper, TextField, Typography, Button } from "@mui/material";
 import ChatMessage from "./ChatMessage";
 import { inputStyle } from "../styles/ChatBox";
@@ -7,6 +7,15 @@ function ChatBox({ messages, onSendMessage }) {
   const [inputValue, setInputValue] = useState("");
   const [visibleCount, setVisibleCount] = useState(30);
   const visibleMessages = messages.slice(-visibleCount);
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const handleSend = () => {
     if (inputValue.trim()) {
@@ -72,6 +81,7 @@ function ChatBox({ messages, onSendMessage }) {
             {visibleMessages.map((msg) => (
               <ChatMessage key={msg.id} role={msg.role} message={msg.message} />
             ))}
+            <div ref={messagesEndRef} />
           </>
         )}
       </Box>
