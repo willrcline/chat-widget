@@ -1,19 +1,38 @@
 import { useState, useEffect } from "react";
 import { Box, IconButton } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import { useConversation } from "@elevenlabs/react";
 import ChatBox from "./ChatBox";
-import {
-  sendUserMessage,
-  setMessageCallback,
-  createConversation,
-  minimalSendUserMessage,
-} from "../services/elevenLabsService";
+import { sendMessage, startConversationSession } from "../services/elevenLabsService";
 
 function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [sessionId, setSessionId] = useState(null);
-  const [conversation, setConversation] = useState(null)
+
+  // Use the working useConversation hook pattern from Test.jsx
+  const conversation = useConversation({
+    textOnly: true,
+    onConnect: () => {
+      console.log("ChatWidget: Connected to ElevenLabs");
+    },
+    onDisconnect: () => {
+      console.log("ChatWidget: Disconnected from ElevenLabs");
+    },
+    onMessage: (message) => {
+      console.log("ChatWidget: Received message:", message);
+      // Add agent message to chat
+      const agentMsg = { role: "agent", message: message.message };
+      setMessages((currentMessages) => {
+        const updatedMessages = [...currentMessages, agentMsg];
+        saveSession(updatedMessages);
+        return updatedMessages;
+      });
+    },
+    onError: (error) => {
+      console.error("ChatWidget: ElevenLabs error:", error);
+    },
+  });
 
   const generateSessionId = () => {
     return (
@@ -48,65 +67,30 @@ function ChatWidget() {
 
   useEffect(() => {
     loadSession();
-
-    // Set up callback for agent messages
-    setMessageCallback((agentResponse) => {
-      const agentMsg = { role: "agent", message: agentResponse };
-      setMessages((currentMessages) => {
-        const updatedMessages = [...currentMessages, agentMsg];
-
-        // Get current sessionId from sessionStorage to avoid stale closure
-        const savedSession = sessionStorage.getItem("chatSession");
-        if (savedSession) {
-          const session = JSON.parse(savedSession);
-          const updatedSession = {
-            sessionId: session.sessionId,
-            messages: updatedMessages,
-          };
-          sessionStorage.setItem("chatSession", JSON.stringify(updatedSession));
-        }
-
-        return updatedMessages;
-      });
-    });
-
-    const asyncFunc = async () => {
-      console.log("about to call createConversation")
-      const convo = await createConversation("testSession");
-      console.log("conversation obj after createconversation()", convo)
-      setConversation(convo)
-    }
-    asyncFunc()
   }, []);
 
-
   const handleSendMessage = async (userMessage) => {
-    // Ensure we have a sessionId
-    // if (!sessionId) {
-    //   console.error('No sessionId available');
-    //   return;
-    // }
-
+    // Add user message to chat immediately
     const userMsg = { role: "user", message: userMessage };
     const updatedMessages = [...messages, userMsg];
     setMessages(updatedMessages);
     saveSession(updatedMessages);
 
+    // Start conversation if not already connected
+    if (conversation.status !== "connected") {
+      try {
+        console.log("Starting conversation before sending message...");
+        await startConversationSession(conversation);
+      } catch (error) {
+        console.error("Failed to start conversation:", error);
+        return;
+      }
+    }
 
-    // await navigator.mediaDevices.getUserMedia({ audio: true });
-
-
-    // Send message to ElevenLabs (response will come via callback)
-    // sendUserMessage(userMessage, sessionId);
-    
-    console.log("conversation__", conversation)
-
-    try {
-      // setTimeout(() => {
-        minimalSendUserMessage(conversation, userMessage)
-      // }, 5000);
-    } catch (error) {
-      console.log("error in sendUserMessage", error);
+    // Send message using the working pattern
+    const success = sendMessage(conversation, userMessage);
+    if (!success) {
+      console.error("Failed to send message - conversation not ready");
     }
   };
 

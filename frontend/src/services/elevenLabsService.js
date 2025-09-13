@@ -1,116 +1,39 @@
-import { Conversation } from '@elevenlabs/client';
+// Simplified service that works with useConversation hook
+// This matches the working pattern from Test.jsx
 
-const AGENT_ID = "agent_7401k4jzgz0nen7rjtftyc3mhgx7";
+export const AGENT_ID = "agent_7401k4jzgz0nen7rjtftyc3mhgx7";
 
-// Store active conversations by sessionId
-const conversations = new Map();
-
-// Callback to update UI - will be set by ChatWidget
-let onAgentMessage = null;
-
-export function setMessageCallback(callback) {
-  onAgentMessage = callback;
-}
-
-export async function minimalSendUserMessage(conversation, userMessage) {
-  conversation.sendUserMessage({
-    text: userMessage,
-  });
-}
-
-export async function sendUserMessage(userMessage, sessionId) { 
-  try {
-    console.log(`ElevenLabs: Sending message from session ${sessionId}: ${userMessage}`);
-    
-    // Get or create conversation for this session
-    let conversation = conversations.get(sessionId);
-    
-    if (!conversation) {
-      conversation = await createConversation(sessionId);
-      conversations.set(sessionId, conversation);
-      
-      // Wait a bit for connection to stabilize
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    }
-    
-    // Check if conversation is still connected
-    if (conversation && conversation.status === 'connected') {
-      console.log(`Sending user message: ${userMessage}`);
-      conversation.sendUserMessage({
-        text: userMessage,
-      });
-    } else {
-      console.error('Conversation not connected, status:', conversation?.status);
-      // Try to recreate connection
-      conversations.delete(sessionId);
-      conversation = await createConversation(sessionId);
-      conversations.set(sessionId, conversation);
-      
-      // Wait and try again
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      if (conversation && conversation.status === 'connected') {
-        conversation.sendUserMessage({
-          text: userMessage,
-        });
-      }
-    }
-    
-  } catch (error) {
-    console.error('ElevenLabs error:', error);
-    // Call the callback with error message
-    if (onAgentMessage) {
-      onAgentMessage("Sorry, I encountered an error. Please try again.");
-    }
+// Simple helper function to send messages via conversation object
+export function sendMessage(conversation, message) {
+  if (conversation.status === "connected") {
+    conversation.sendUserMessage(message);
+    return true;
+  } else {
+    console.warn("Cannot send message - connection not ready. Status:", conversation.status);
+    return false;
   }
 }
 
-export async function createConversation(sessionId) {
-  console.log(`Creating ElevenLabs conversation for session ${sessionId}`);
-
+// Helper function to start a conversation session
+export async function startConversationSession(conversation) {
   try {
-    // Request microphone permission
-    await navigator.mediaDevices.getUserMedia({ audio: true });
-
-    const conversation = await Conversation.startSession({
+    await conversation.startSession({
       agentId: AGENT_ID,
-      overrides: {
-        conversation: {
-          textOnly: true,
-        },
-      },
-      onConnect: () => {
-        console.log(`ElevenLabs connected for session ${sessionId}`);
-      },
-      onDisconnect: () => {
-        console.log(`ElevenLabs disconnected for session ${sessionId}`);
-        // conversations.delete(sessionId);
-      },
-      onError: (error) => {
-        console.error(`ElevenLabs error for session ${sessionId}:`, error);
-      },
-      onMessage: (message) => {
-        console.log(`ElevenLabs message for session ${sessionId}:`, message);
-        // Handle agent responses - directly update UI
-        // if (message.type === 'agent_response' && onAgentMessage) {
-        onAgentMessage(message.message);
-        // }
-      },
-      onModeChange: (mode) => {
-        console.log("mode changed___", mode);
-      },
     });
-
-    return conversation;
+    return true;
   } catch (error) {
     console.error("Failed to start conversation:", error);
+    return false;
   }
 }
 
-export function cleanupConversation(sessionId) {
-  const conversation = conversations.get(sessionId);
-  if (conversation) {
-    conversation.endSession();
-    conversations.delete(sessionId);
-    console.log(`Cleaned up ElevenLabs conversation for session ${sessionId}`);
+// Helper function to end a conversation session
+export async function endConversationSession(conversation) {
+  try {
+    await conversation.endSession();
+    return true;
+  } catch (error) {
+    console.error("Failed to end conversation:", error);
+    return false;
   }
 }
