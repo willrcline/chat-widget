@@ -1,6 +1,5 @@
 import { useConversation } from "@elevenlabs/react";
 import { useCallback } from "react";
-import { minimalSendUserMessage } from '../services/elevenLabsService'
 
 export function Conversation() {
   const conversation = useConversation({
@@ -10,9 +9,6 @@ export function Conversation() {
     onError: (error) => console.error("Error:", error),
   });
 
-  // const { status, sendUserMessage } = useConversation();
-
-
   const handleSendMessage = () => {
     console.log("send message btn clicked")
     const message = "If you receive this message, tell me what 2 + 2 is.";
@@ -21,7 +17,6 @@ export function Conversation() {
     } else {
       console.warn("Cannot send message - connection not ready. Status:", status);
     }
-    // () => minimalSendUserMessage(conversation, message)
   }
 
   const startConversation = useCallback(async () => {
