@@ -42,7 +42,7 @@ function ChatBox() {
         bottom: 80,
         right: 20,
         width: 350,
-        height: 400,
+        height: 500,
         display: "flex",
         flexDirection: "column",
         borderRadius: 4,
@@ -50,6 +50,17 @@ function ChatBox() {
         boxShadow: 8,
       }}
     >
+      {/* Header Area */}
+      <Box
+        sx={{
+          p: 1,
+          backgroundColor: "black",
+          height: 100
+        }}
+      >
+        Status: 
+      </Box>
+
       {/* Messages Area */}
       <Box
         sx={{
