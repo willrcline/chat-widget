@@ -1,5 +1,6 @@
 import ChatWidget from './components/ChatWidget';
 import {Conversation} from './components/Test'
+import { ChatProvider } from './contexts/ChatContext';
 import './App.css';
 
 function App() {
@@ -19,7 +20,9 @@ function App() {
       <p>Try clicking the chat button to start a conversation!</p>
 
       <Conversation />
-      <ChatWidget />
+      <ChatProvider>
+        <ChatWidget />
+      </ChatProvider>
     </div>
   );
 }
