@@ -1,7 +1,55 @@
-import { Box, Typography, Paper } from '@mui/material';
+import { Box, Typography, Paper, Link } from '@mui/material';
 
 function ChatMessage({ role, message }) {
   const isUser = role === 'user';
+  
+  // Function to parse markdown links and convert them to JSX
+  const parseMarkdownLinks = (text) => {
+    // Regex to match markdown links: [text](url)
+    const markdownLinkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+    const parts = [];
+    let lastIndex = 0;
+    let match;
+
+    while ((match = markdownLinkRegex.exec(text)) !== null) {
+      // Add text before the link
+      if (match.index > lastIndex) {
+        parts.push(text.slice(lastIndex, match.index));
+      }
+      
+      // Add the link
+      const linkText = match[1];
+      const linkUrl = match[2];
+      parts.push(
+        <Link
+          key={match.index}
+          href={linkUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          sx={{
+            color: isUser ? "#1976d2" : "#90caf9",
+            textDecoration: "underline",
+            "&:hover": {
+              textDecoration: "underline",
+            },
+          }}
+        >
+          {linkText}
+        </Link>
+      );
+      
+      lastIndex = match.index + match[0].length;
+    }
+    
+    // Add remaining text after the last link
+    if (lastIndex < text.length) {
+      parts.push(text.slice(lastIndex));
+    }
+    
+    return parts.length > 0 ? parts : text;
+  };
+
+  const parsedMessage = parseMarkdownLinks(message);
   
   return (
     <Box
@@ -21,7 +69,9 @@ function ChatMessage({ role, message }) {
           borderRadius: 2,
         }}
       >
-        <Typography color={isUser ? "black" : "white"}>{message}</Typography>
+        <Typography color={isUser ? "black" : "white"}>
+          {parsedMessage}
+        </Typography>
       </Paper>
     </Box>
   );
