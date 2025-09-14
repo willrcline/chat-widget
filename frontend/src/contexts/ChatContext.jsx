@@ -1,6 +1,9 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useConversation } from "@elevenlabs/react";
-import { sendMessage, startConversationSession } from "../services/elevenLabsService";
+import {
+  sendMessage,
+  startConversationSession,
+} from "../services/elevenLabsService";
 
 const ChatContext = createContext();
 
@@ -14,7 +17,8 @@ export const useChatContext = () => {
 
 export const ChatProvider = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState(null)
+  const [connectionStatus, setConnectionStatus] = useState(null);
+  const [unsentMessagesQueue, setUnsentMessagesQueue] = useState([]);
   const [messages, setMessages] = useState([]);
   const [sessionId, setSessionId] = useState(null);
 
@@ -22,7 +26,18 @@ export const ChatProvider = ({ children }) => {
     textOnly: true,
     onConnect: () => {
       console.log("ChatWidget: Connected to ElevenLabs");
-      setConnectionStatus("Connected")
+      setConnectionStatus("Connected");
+      // ToDo: Send queued messages
+      // Process all queued messages
+      if (unsentMessagesQueue.length > 0) {
+        const messagesToSend = [...unsentMessagesQueue]; // Copy the array
+        setUnsentMessagesQueue([]); // Clear the queue immediately
+
+        // Send each message
+        messagesToSend.forEach((message) => {
+          handleSendMessage(message);
+        });
+      }
     },
     onDisconnect: () => {
       console.log("ChatWidget: Disconnected from ElevenLabs");
@@ -30,11 +45,11 @@ export const ChatProvider = ({ children }) => {
     },
     onMessage: (message) => {
       console.log("ChatWidget: Received message:", message);
-      const agentMsg = { 
+      const agentMsg = {
         id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        role: "agent", 
+        role: "agent",
         message: message.message,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
       setMessages((currentMessages) => {
         const updatedMessages = [...currentMessages, agentMsg];
@@ -79,29 +94,31 @@ export const ChatProvider = ({ children }) => {
   };
 
   const handleSendMessage = async (userMessage) => {
-    const userMsg = { 
-      id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      role: "user", 
-      message: userMessage,
-      timestamp: Date.now()
-    };
-    const updatedMessages = [...messages, userMsg];
-    setMessages(updatedMessages);
-    saveSession(updatedMessages);
-
     if (conversation.status !== "connected") {
       try {
         console.log("Starting conversation before sending message...");
+        // Add to queue using setState
+        setUnsentMessagesQueue((prev) => [...prev, userMessage]);
         await startConversationSession(conversation);
       } catch (error) {
         console.error("Failed to start conversation:", error);
         return;
       }
-    }
+    } else {
+      const userMsg = {
+        id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        role: "user",
+        message: userMessage,
+        timestamp: Date.now(),
+      };
+      const updatedMessages = [...messages, userMsg];
+      setMessages(updatedMessages);
+      saveSession(updatedMessages);
 
-    const success = sendMessage(conversation, userMessage);
-    if (!success) {
-      console.error("Failed to send message - conversation not ready");
+      const success = sendMessage(conversation, userMessage);
+      if (!success) {
+        console.error("Failed to send message - conversation not ready");
+      }
     }
   };
 
@@ -111,12 +128,6 @@ export const ChatProvider = ({ children }) => {
 
   useEffect(() => {
     loadSession();
-    try {
-        console.log("Starting conversation on component load...");
-        startConversationSession(conversation);
-      } catch (error) {
-        console.error("Failed to start conversation:", error);
-      }
   }, []);
 
   const value = {
@@ -129,9 +140,5 @@ export const ChatProvider = ({ children }) => {
     toggleChat,
   };
 
-  return (
-    <ChatContext.Provider value={value}>
-      {children}
-    </ChatContext.Provider>
-  );
+  return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
 };
